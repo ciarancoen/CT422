@@ -1,0 +1,26 @@
+Assignment 1
+
+Name:        Nathan Flynn
+ID:        11330191
+Class:        Modern Information Management
+Date:        22 September 2014
+
+
+Question 1
+Bob & Eoin:        -0.8453
+Bob & Lisa:         0.8087
+Bob &  Maura:        -0.4869
+
+I predict that Bob would like the movie “Don’t Look Back”. He has a strong positive correlation with Lisa, who rated the movie a 5, and a strong negative correlation with Eoin, who rated it a 2.
+
+
+Question 2
+In a situation like this, a logarithmic scale could be used. A score to indicate a user’s interest in the artist could be determined by inputting their playcount into the log function with a suitable base, like 10. The user’s interest would be ranked between 0-10. However, this method wouldn’t transform the data into a fixed range, but rather there would be an “imaginary” cap at 10, which would mean that the user has played the artist 100,000 times: high enough to show that they definitely have an interest in the artist.
+
+
+Question 3
+Mean average error, coverage, and accuracy are some ways that are used to evaluate collaborative filtering systems. They can be useful at times, but they have their drawbacks. Various factors, collectively called “noise” may skew results somewhat. Examples of things causing noise are: a person’s taste changing over time, someone not rating things faithfully, sharing an account with other people etc. There is the problem of so-called “black”, or “grey sheep”: people whose tastes are inconsistent, making it difficult to give them a useful recommendation. In general, it can be extremely tough to accurately predict what people will like because of how varied and illogical their tastes can be. Thus, the above methods of evaluating systems cannot always be considered foolproof, but they are useful for giving a general judgement of the system.
+
+
+Question 4
+Extra information such as director, cast, year, and genre of a movie would be useful in improving  a system’s ability to provide recommendations. The system could use this information to find, through other users, movies by the same director, or by directors with a similar style. Similarly, if a user tends to watch movies with certain actors, or of a certain genre, then they will be recommended movies with those actors, or movies in this genre. Year could be used to detect if the user enjoys movies of a certain period, and recommendations could be made accordingly. These would increase the possible amount of recommendations to be made, improving the systems coverage.

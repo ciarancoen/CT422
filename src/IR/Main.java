@@ -1,5 +1,6 @@
 package IR;
 
+import IR.Helpers;
 import java.lang.reflect.Method;
 import snowball.*;
 import java.util.Hashtable;
@@ -11,19 +12,10 @@ import java.util.ArrayList;
 // NOTE: to use the snowball stemmer, include the stemmer.jar in classpath
 // when compiling and running
 
-class Main {
+public class Main {
 	public static void main(String[] args) {
     	File[] files;
     	List<String> wordsList = new ArrayList<String>();
-
-    	// stemmer stuff
-    	SnowballStemmer stemmer = null;
-    	try {
-	    	Class stemClass = Class.forName("snowball.englishStemmer");
-	        stemmer = (SnowballStemmer) stemClass.newInstance();
-	    } catch (Exception e) {
-	    	e.printStackTrace();
-	    }
 
     	// get a list of all the docs
     	files = new File("documents").listFiles();
@@ -51,12 +43,10 @@ class Main {
     					else {
     						// for consistency etc.
     						word = word.toLowerCase();
-    						// stem word
-    						stemmer.setCurrent(word);
-        					stemmer.stem();
+    						word = Helpers.stemWord(word);
 
         					// TODO: Replace ArrayList wordsList with a hash table
-        					wordsList.add(stemmer.getCurrent());
+        					wordsList.add(word);
     					}
     				} // end while
     				

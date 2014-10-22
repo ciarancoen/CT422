@@ -30,27 +30,29 @@ public class Main {
 
     			// reads a line at a time
     			while ((line = reader.readLine()) != null) {
-    				// split line into words (removes all punctuation & whitespace)
-    				String[] wordsArray = line.split("[\\p{P} \\t\\n\\r]");
+                             //Getting some unknown characters from InfoManagement.txt cos of the encoding. Could use this instead? readAllLines(Path path, Charset cs) throws IOException
+                            // split line into words (removes all punctuation & whitespace)
+                            String[] wordsArray = line.split("[\\p{P} \\t\\n\\r]");
 
-    				for (String word : wordsArray) {
-                        // for consistency etc.
-                        word = word.toLowerCase();
+                            for (String word : wordsArray) {
+                                // for consistency etc.
+                                word = word.toLowerCase();
 
-    					// TODO: perform stopword removal (replace 'false' with check)
-    					if ( Helpers.isStopWord(word) ) {
-    						// if the word is a stop word, skip it
-    						continue;
-    					}
-    					else {
-    						word = Helpers.stemWord(word);
+                                // TODO: perform stopword removal (replace 'false' with check)
+                                if ( Helpers.isStopWord(word) ) {
+                                        // if the word is a stop word, skip it
+                                        continue;
+                                }
+                                else {                                        
+                                    word = Helpers.stemWord(word);
 
-        					// TODO: Replace ArrayList wordsList with a hash table
-        					wordsList.add(word);
-    					}
-    				} // end while
-    				
-				}
+                                    // TODO: Replace ArrayList wordsList with a hash table
+                                    // First need to figure out what to index...
+                                    wordsList.add(word);
+                                }
+                            }	
+			}// end while
+                        
     		} catch (IOException e) {
     			e.printStackTrace();
     		}

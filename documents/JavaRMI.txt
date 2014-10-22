@@ -1,0 +1,41 @@
+Assignment 1
+Name:        Nathan Flynn
+ID:        11330191
+Date:        13 October 2014
+Course:    Distributed Computing & Cooperative Computing
+
+Testing the Server
+The server creates a collection of 10 test accounts by default. 
+The user can specify using a command line argument how many accounts they wish to create. 
+Passing in a non-integer argument throws an error. 
+Other command line arguments are discarded.
+
+Default:
+
+Passing an integer as an argument:
+
+Passing a non-integer as an argument:
+
+
+Testing the Client
+The client takes between 4 and 6 arguments in the format: 
+address port operation accountNumber [account | startDate endDate].
+If the user enters anything less than four, they will get an error message. 
+If they enter more than six, the excess arguments are discarded.
+If the operation is withdraw, and an account number and an amount are given, the withdrawal operation is performed, and a message is returned to the user.
+The deposit command works similarly.
+The inquiry command only requires an account number. It returns the name and balance of the account, if it exists.
+The statement account takes a start date and an end date and creates a statement for the user. The dates should be in the format day/month/year, e.g 13/10/2014
+
+Withdraw:
+For simplicity, the user may withdraw below €0.
+
+Deposit:
+
+Inquiry:
+
+Statement:
+
+Empty statement & date parsing error:
+
+Attempt to perform an operation on non-existent account:

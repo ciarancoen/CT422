@@ -1,0 +1,33 @@
+Game Design
+Name:        Nathan Flynn
+ID:        11330191
+Date:        5 March 2014
+Course:    CT360, Game Design
+
+
+Game Description:
+The game I made was a simple first-person basketball game.
+
+Instructions:
+WSAD are used to move the character.
+The space button jumps.
+The mouse is used to control the player’s view.
+Clicking the left mouse button creates a ball object.
+Clicking it again destroys the ball.
+Scrolling the mouse wheel increases the power of the throw.
+
+3D Models & Texture:
+I made the basketball hoop using Blender. The hoop has no texture, but I applied the materials and changed their colours.
+The basketball, walls, and floor were made in Shiva. Their textures were found online.
+I made the sky texture using GIMP.
+
+Texture Sources:
+Basketball texture: https://www.robinwood.com/Catalog/FreeStuff/Textures/TexturePages/BallMaps.html
+Red brick / Grey brick textures:
+http://www.texturemate.com/category/image-galleries/seamless/seamless-brick
+
+Code:
+Code for controlling the first-person camera was copied from the FirstPersonView game.
+All the other code and the HUD were made by me.
+
+Screenshots:

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 
 public class Helpers {
+	
 	public static String stemWord(String word) {
 		SnowballStemmer stemmer = null;
 
@@ -23,5 +24,11 @@ public class Helpers {
         stemmer.stem();
 
         return stemmer.getCurrent();
+	}
+
+	public static boolean isStopWord(String word) {
+		// check is word is stop word
+		
+		return false;
 	}
 }

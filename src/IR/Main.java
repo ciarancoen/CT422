@@ -34,15 +34,15 @@ public class Main {
     				String[] wordsArray = line.split("[\\p{P} \\t\\n\\r]");
 
     				for (String word : wordsArray) {
+                        // for consistency etc.
+                        word = word.toLowerCase();
+
     					// TODO: perform stopword removal (replace 'false' with check)
-    					// word.equals("") skips blank lines
-    					if ( false || (word.equals("")) ) {
+    					if ( Helpers.isStopWord(word) ) {
     						// if the word is a stop word, skip it
     						continue;
     					}
     					else {
-    						// for consistency etc.
-    						word = word.toLowerCase();
     						word = Helpers.stemWord(word);
 
         					// TODO: Replace ArrayList wordsList with a hash table

@@ -52,7 +52,7 @@ public class Helpers {
 		"wouldn't", "yes", "yet", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves", "zero"
 	};
     	
-    	List<String> stopWordsList = Arrays.asList(stopWordsArray);
+    	static List<String> stopWordsList = Arrays.asList(stopWordsArray);
     	
 	public static String stemWord(String word) {
 		SnowballStemmer stemmer = null;

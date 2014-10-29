@@ -51,7 +51,9 @@ public class Helpers {
 		"who", "who's", "whoever", "whole", "whom", "whose", "why", "will", "willing", "wish", "with", "within", "without", "won't", "wonder", "would", 
 		"wouldn't", "yes", "yet", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves", "zero"
 	};
-    
+    	
+    	List<String> stopWordsList = Arrays.asList(stopWordsArray);
+    	
 	public static String stemWord(String word) {
 		SnowballStemmer stemmer = null;
 
@@ -70,7 +72,6 @@ public class Helpers {
 
 	public static boolean isStopWord(String word) {
 		// check is word is stop word
-            List<String> stopWordsList = Arrays.asList(stopWordsArray);
             
             if ( stopWordsList.contains(word)) {
 		return true;

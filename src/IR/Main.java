@@ -1,12 +1,18 @@
 package IR;
 
 import IR.Helpers;
+import MapReduce.*;
 import java.lang.reflect.Method;
 import snowball.*;
-import java.util.Hashtable;
 import java.io.*;
+import java.lang.StringBuilder;
+
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
 
 
 // NOTE: to use the snowball stemmer, include the stemmer.jar in classpath
@@ -14,23 +20,43 @@ import java.util.ArrayList;
 
 public class Main {
 	public static void main(String[] args) {
-    	File[] files;
-    	List<String> wordsList = new ArrayList<String>();
+        // folder for documents
+        String documentsPath = "documents";
 
-    	// get a list of all the docs
-    	files = new File("documents").listFiles();
+        // input & output for MapReduce
+        Map<String, String> input = new HashMap<String, String>();
+        Map<String, Map<String, Integer>> output = new HashMap<String, Map<String, Integer>>();
 
-    	// process the files
-    	for (File f : files) {
-    		System.out.println(f.getName());
+        input = parseDocuments(documentsPath);
+        output = mapReduce(input);
 
-    		try {
-    			BufferedReader reader = new BufferedReader(new FileReader(f));
-    			String line;
+        // get returns Map<String, Integer>
+        // some test words
+        System.out.println(output.get("skin") +"\n");
+        System.out.println(output.get("placenta") +"\n");
+        System.out.println(output.get("blood") +"\n");
 
-    			// reads a line at a time
-    			while ((line = reader.readLine()) != null) {
-                    //Getting some unknown characters from InfoManagement.txt cos of the encoding. Could use this instead? readAllLines(Path path, Charset cs) throws IOException
+	}
+
+
+    public static Map<String, String> parseDocuments(String folderPath) {
+        File[] files;
+
+        // get a list of all the docs
+        files = new File(folderPath).listFiles();
+
+        Map<String, String> map = new HashMap<String, String>();
+
+        // process the files
+        for (File f : files) {
+            StringBuilder str = new StringBuilder(""); // creats a string of document for HashMap
+
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(f));
+                String line;
+
+                // reads a line at a time
+                while ((line = reader.readLine()) != null) {
                     // split line into words (removes all punctuation & whitespace)
                     String[] wordsArray = line.split("[\\p{P} \\t\\n\\r]");
 
@@ -45,21 +71,70 @@ public class Main {
                     else {                                        
                         word = Helpers.stemWord(word);
 
-                        // TODO: Replace ArrayList wordsList with a hash table
-                        // First need to figure out what to index...
-                        wordsList.add(word);
+                        str.append(word + " ");
                     }
-                }	
-			}// end while
+                }   
+            }// end while
                         
-    		} catch (IOException e) {
-    			e.printStackTrace();
-    		}
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-    	} // end for
+            // add to map
+            map.put(f.getName(), str.toString());
 
-    	for (String s : wordsList) {
-    		System.out.println(s);
-    	}
-	}// end main
+        } // end for
+
+        return map;
+    }
+
+
+    // cpoied from MapReduce example class
+    public static Map<String, Map<String, Integer>> mapReduce(Map<String, String> input) {
+        Map<String, Map<String, Integer>> output = new HashMap<String, Map<String, Integer>>();
+
+        // MAP:               
+        List<MappedItem> mappedItems = new LinkedList<MappedItem>();
+                
+        Iterator<Map.Entry<String, String>> inputIter = input.entrySet().iterator();
+        while(inputIter.hasNext()) {
+            Map.Entry<String, String> entry = inputIter.next();
+            String file = entry.getKey();
+            String contents = entry.getValue();
+                               
+            MapReduce.map(file, contents, mappedItems);
+        }
+        
+
+        // GROUP:              
+        Map<String, List<String>> groupedItems = new HashMap<String, List<String>>();
+                       
+        Iterator<MappedItem> mappedIter = mappedItems.iterator();
+        while(mappedIter.hasNext()) {
+            MappedItem item = mappedIter.next();
+            String word = item.getWord();
+            String file = item.getFile();
+            List<String> list = groupedItems.get(word);
+            if (list == null) {
+                    list = new LinkedList<String>();
+                    groupedItems.put(word, list);
+            }
+            list.add(file);
+        }               
+
+
+        // REDUCE:
+        Iterator<Map.Entry<String, List<String>>> groupedIter = groupedItems.entrySet().iterator();
+        while(groupedIter.hasNext()) {
+            Map.Entry<String, List<String>> entry = groupedIter.next();
+            String word = entry.getKey();
+            List<String> list = entry.getValue();
+                               
+            MapReduce.reduce(word, list, output);
+        }
+
+        return output;
+    }
+
+
 }

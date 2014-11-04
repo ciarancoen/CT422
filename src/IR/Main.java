@@ -13,12 +13,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import TF_IDF.TfIdf;
+import java.util.Arrays;
 
 
 // NOTE: to use the snowball stemmer, include the stemmer.jar in classpath
 // when compiling and running
 
 public class Main {
+    static int fileCount =0;
+    
 	public static void main(String[] args) {
         // folder for documents
         String documentsPath = "documents";
@@ -32,21 +36,29 @@ public class Main {
 
         // get returns Map<String, Integer>
         // some test words
-        System.out.println(output.get("skin") +"\n");
-        System.out.println(output.get("placenta") +"\n");
-        System.out.println(output.get("blood") +"\n");
+        System.out.println(output.get("skin") +"\n");//occurs in 22 docs.
+//        should be something like: tfidf = tfCalculator(output.get("skin"))
+//        Object[] arr = output.entrySet().toArray();
+//        System.out.println("total files: "+fileCounter);
+//        String[] str = null;
+//        double count = TfIdf.tfCalculator(str, "skin");
+//        System.out.println("size: "+output.get("skin").size());
+//        System.out.println(output.get("placenta") +"\n");
+//        System.out.println(output.get("blood") +"\n");
 
 	}
-
+//    TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document)
+//    IDF(t) = log(Total number of documents / Number of documents with term t in it).
 
     public static Map<String, String> parseDocuments(String folderPath) {
         File[] files;
-
+        int fileLength =0;
         // get a list of all the docs
         files = new File(folderPath).listFiles();
+        fileCount = files.length;
 
         Map<String, String> map = new HashMap<String, String>();
-
+        
         // process the files
         for (File f : files) {
             StringBuilder str = new StringBuilder(""); // creats a string of document for HashMap
@@ -59,7 +71,7 @@ public class Main {
                 while ((line = reader.readLine()) != null) {
                     // split line into words (removes all punctuation & whitespace)
                     String[] wordsArray = line.split("[\\p{P} \\t\\n\\r]");
-
+                     
                     for (String word : wordsArray) {
                     // for consistency etc.
                     word = word.toLowerCase();
@@ -72,19 +84,23 @@ public class Main {
                         word = Helpers.stemWord(word);
 
                         str.append(word).append(" ");
-                    }
-                }   
-            }// end while
                         
+                        //counting file length [will be added to the map key]
+                        fileLength ++;                   
+                    }
+                }
+//                    System.out.println(f.getName()+Arrays.toString(wordsArray));
+            }// end while
+                             
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             // add to map
-            map.put(f.getName(), str.toString());
-
+            map.put(f.getName()+"["+fileLength+"]", str.toString());
+            fileLength =0;
         } // end for
-
+        
         return map;
     }
 

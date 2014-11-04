@@ -71,7 +71,7 @@ public class Main {
                     else {                                        
                         word = Helpers.stemWord(word);
 
-                        str.append(word + " ");
+                        str.append(word).append(" ");
                     }
                 }   
             }// end while

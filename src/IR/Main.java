@@ -22,6 +22,7 @@ import java.util.Arrays;
 
 public class Main {
     static int fileCount =0;
+    static Map<String, Integer> fileLengths = new HashMap<String, Integer>();
     
 	public static void main(String[] args) {
         // folder for documents
@@ -37,8 +38,10 @@ public class Main {
         // get returns Map<String, Integer>
         // some test words
         System.out.println(output.get("skin") +"\n");//occurs in 22 docs.
+        System.out.println("Length of file: "+fileLengths.get("78.txt") +" words");
 //        should be something like: tfidf = tfCalculator(output.get("skin"))
 //        Object[] arr = output.entrySet().toArray();
+//        System.out.println(Arrays.toString(arr));
 //        System.out.println("total files: "+fileCounter);
 //        String[] str = null;
 //        double count = TfIdf.tfCalculator(str, "skin");
@@ -57,7 +60,7 @@ public class Main {
         files = new File(folderPath).listFiles();
         fileCount = files.length;
 
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<String, String>();        
         
         // process the files
         for (File f : files) {
@@ -97,8 +100,9 @@ public class Main {
             }
 
             // add to map
-            map.put(f.getName()+"["+fileLength+"]", str.toString());
-            fileLength =0;
+            map.put(f.getName(), str.toString());
+            fileLengths.put(f.getName(), fileLength);
+            fileLength =0;//reset counter
         } // end for
         
         return map;

@@ -15,6 +15,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import TF_IDF.TfIdf;
 import java.util.Arrays;
+import java.util.Map.Entry;
+import java.util.Set;
 
 
 // NOTE: to use the snowball stemmer, include the stemmer.jar in classpath
@@ -22,7 +24,7 @@ import java.util.Arrays;
 
 public class Main {
     static int fileCount =0;
-    static Map<String, Integer> fileLengths = new HashMap<String, Integer>();
+    static Map<String, Double> fileLengths = new HashMap<String, Double>();
     
 	public static void main(String[] args) {
         // folder for documents
@@ -31,21 +33,38 @@ public class Main {
         // input & output for MapReduce
         Map<String, String> input = new HashMap<String, String>();
         Map<String, Map<String, Integer>> output = new HashMap<String, Map<String, Integer>>();
+        
+//      Output of TFIDF calculations: Key = term, value= TFIDF(term)
+        Map<String, Map<String, Integer>> termFreqMap = new HashMap<String, Map<String, Integer>>();
 
         input = parseDocuments(documentsPath);
         output = mapReduce(input);
 
         // get returns Map<String, Integer>
         // some test words
-        System.out.println(output.get("skin") +"\n");//occurs in 22 docs.
-        System.out.println("Length of file: "+fileLengths.get("78.txt") +" words");
+//        System.out.println(output.get("medica").entrySet() +"\n");//occurs in 22 docs.
+        
+//        Set<Entry<String, Integer>> entries = output.get("skin").entrySet();
+//        String[] amountOfTermInDocument;
+//        for (Entry entry : entries) {
+//            amountOfTermInDocument = entry.toString().split("=");
+//            System.out.println("entry: "+Arrays.toString(amountOfTermInDocument));
+//        }
+
+//        use (Integer).intValue()...
+//        System.out.println("Length of file: "+fileLengths.get("78.txt") +" words");
 //        should be something like: tfidf = tfCalculator(output.get("skin"))
+        TfIdf tfidf = new TfIdf(output);//1 TfIdf object can be used for all the indexing
+        
+        //NEED TO ADD TO THIS MAP NOT OVERWRITE IT!!!
+        Map<String, Map<String, Double>> tf = tfidf.tfCalculator("patient", fileLengths);//need to call it once for all terms in output map
+        System.out.println(tf);
 //        Object[] arr = output.entrySet().toArray();
 //        System.out.println(Arrays.toString(arr));
 //        System.out.println("total files: "+fileCounter);
 //        String[] str = null;
 //        double count = TfIdf.tfCalculator(str, "skin");
-//        System.out.println("size: "+output.get("skin").size());
+//        System.out.println("size: "+output.get("medica").size());//count occurrences of each word
 //        System.out.println(output.get("placenta") +"\n");
 //        System.out.println(output.get("blood") +"\n");
 
@@ -55,7 +74,7 @@ public class Main {
 
     public static Map<String, String> parseDocuments(String folderPath) {
         File[] files;
-        int fileLength =0;
+        double fileLength =0;
         // get a list of all the docs
         files = new File(folderPath).listFiles();
         fileCount = files.length;
@@ -64,7 +83,7 @@ public class Main {
         
         // process the files
         for (File f : files) {
-            StringBuilder str = new StringBuilder(""); // creats a string of document for HashMap
+            StringBuilder str = new StringBuilder(""); // creates a string of document for HashMap
 
             try {
                 BufferedReader reader = new BufferedReader(new FileReader(f));

@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.Set;
 
-
 // NOTE: to use the snowball stemmer, include the stemmer.jar in classpath
 // when compiling and running
 

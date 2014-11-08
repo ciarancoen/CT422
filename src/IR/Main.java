@@ -25,41 +25,65 @@ public class Main {
     static Map<String, Double> fileLengths = new HashMap<String, Double>();
     
 	public static void main(String[] args) {
-        // folder for documents
-        String documentsPath = "documents";
+            // folder for documents
+            String documentsPath = "documents";
 
-        // input & output for MapReduce
-        Map<String, String> input = new HashMap<String, String>();
-        Map<String, Map<String, Integer>> output = new HashMap<String, Map<String, Integer>>();
-        
-//      Output of TFIDF calculations: Key = term, value= TFIDF(term)
-        
-        Map<String, Map<String, Integer>> termFreqMap = new HashMap<String, Map<String, Integer>>();
+            // input & output for MapReduce
+            Map<String, String> input = new HashMap<String, String>();
+            Map<String, Map<String, Integer>> output = new HashMap<String, Map<String, Integer>>();
 
-        input = parseDocuments(documentsPath);
-        output = mapReduce(input);
+    //      Output of TFIDF calculations: Key = term, value= TFIDF(term)
 
-        String[] queryArray = {"patient"};//can use something like this for storing all the query terms
-        // get returns Map<String, Integer>
-        // some test words
+            Map<String, Map<String, Integer>> termFreqMap = new HashMap<String, Map<String, Integer>>();
 
-        TfIdf tfidf = new TfIdf(output);//1 TfIdf object can be used for all the indexing
-        double[] idf_array = new double[queryArray.length];
-        
-        //NEED TO ADD TO THIS MAP NOT OVERWRITE IT!!!
-        Map<String, Map<String, Double>> tf = tfidf.tfCalculator(queryArray[0], fileLengths);//need to call it once for all terms in output map
-//        System.out.println(tf);
-//        System.out.println(output.get(queryArray[0]).entrySet().size());//returns total amount of relevant documents
-        idf_array[0] = tfidf.idfCalculator(fileCount, queryArray[0]);
-//        Object[] arr = output.entrySet().toArray();
-        System.out.println(Arrays.toString(idf_array));
-//        System.out.println("total files: "+fileCounter);
-//        String[] str = null;
-//        double count = TfIdf.tfCalculator(str, "skin");
-//        System.out.println("size: "+output.get("medica").size());//count occurrences of each word
-//        System.out.println(output.get("placenta") +"\n");
-//        System.out.println(output.get("blood") +"\n");
+            input = parseDocuments(documentsPath);
+            output = mapReduce(input);
 
+    //      Can use args[] from command line to input queries
+//            String[] queryArray = {"autoimmune", "hemolytic", "anemia"};//can use something like this for storing all the query terms
+            String[] queryArray = {"the", "crystalline", "lens", "in", "vertebrates", "including", "humans"};
+            List<String> queryList= new ArrayList<String>();
+            //should return doc 24.txt first
+
+            // query pre-processing
+            for(String q : queryArray){
+                q = q.toLowerCase();
+
+                if ( Helpers.isStopWord(q) ) {
+                    // if the word is a stop word, skip it
+                    continue;
+                }
+                else {                                        
+                    q = Helpers.stemWord(q);
+                    queryList.add(q);
+                }
+            }
+            System.out.println("Queries: "+queryList.toString());
+
+            TfIdf tfidf = new TfIdf(output);//1 TfIdf object can be used for all the indexing
+            double[] idf_array = new double[queryList.size()];
+
+            //Adds all term frequencies to same map
+            Map<String, Map<String, Double>> tf = new HashMap<String, Map<String, Double>>();
+            for(int i=0;i<queryList.size();i++){
+                tf.putAll(tfidf.tfCalculator(queryList.get(i), fileLengths));//need to call it once for all terms in output map
+                idf_array[i] = tfidf.idfCalculator(fileCount, queryList.get(i));
+            }
+            System.out.println("\n\ntf map: "+tf);
+    //        System.out.println(output.get(queryArray[0]).entrySet().size());//returns total amount of relevant documents
+
+    //        Object[] arr = output.entrySet().toArray();
+            System.out.println("\n\nidf array: "+Arrays.toString(idf_array));
+
+            for(int i=0;i<tf.keySet().size();i++){
+                Set<Map.Entry<String, Double>> entries = tf.get(queryList.get(i)).entrySet();
+                for (Map.Entry entry : entries) {//loop thru all occurrences of term
+                    double weighting = (double)entry.getValue()*idf_array[i];
+                    entry.setValue(weighting);  //replaces tf with tf*idf.
+    //                System.out.println(entry);
+                }
+            }
+            System.out.println("\n\ntfidf map: "+tf);
 	}
 //    TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document)
 //    IDF(t) = log(Total number of documents / Number of documents with term t in it).

@@ -53,18 +53,9 @@ public class TfIdf { // /** * Calculated the tf of term termToCheck *
 
 //    IDF(t) = log(Total number of documents / Number of documents with term t in it).
                                 //List of arrays: 
-    public double idfCalculator(List<String[]> allTerms, String termToCheck) { 
-        double count = 0; 
-
-        for (String[] ss : allTerms) {
-            for (String s : ss) { 
-                if (s.equalsIgnoreCase(termToCheck)) { 
-                    count++; 
-                    break; 
-                }
-            } 
-        } 
-
-        return Math.log(allTerms.size() / count); 
+    public double idfCalculator(int docCount, String query) { 
+        double relevantDocCount = output.get(query).entrySet().size();
+//        System.out.println("docCount:"+docCount+", relevantDocCount:"+relevantDocCount+", result:"+Math.log10(docCount / relevantDocCount));
+        return Math.log10(docCount / relevantDocCount); 
     }
 }

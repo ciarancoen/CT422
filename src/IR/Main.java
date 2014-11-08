@@ -40,27 +40,20 @@ public class Main {
         input = parseDocuments(documentsPath);
         output = mapReduce(input);
 
+        String[] queryArray = {"patient"};//can use something like this for storing all the query terms
         // get returns Map<String, Integer>
         // some test words
-//        System.out.println(output.get("medica").entrySet() +"\n");//occurs in 22 docs.
-        
-//        Set<Entry<String, Integer>> entries = output.get("skin").entrySet();
-//        String[] amountOfTermInDocument;
-//        for (Entry entry : entries) {
-//            amountOfTermInDocument = entry.toString().split("=");
-//            System.out.println("entry: "+Arrays.toString(amountOfTermInDocument));
-//        }
 
-//        use (Integer).intValue()...
-//        System.out.println("Length of file: "+fileLengths.get("78.txt") +" words");
-//        should be something like: tfidf = tfCalculator(output.get("skin"))
         TfIdf tfidf = new TfIdf(output);//1 TfIdf object can be used for all the indexing
+        double[] idf_array = new double[queryArray.length];
         
         //NEED TO ADD TO THIS MAP NOT OVERWRITE IT!!!
-        Map<String, Map<String, Double>> tf = tfidf.tfCalculator("patient", fileLengths);//need to call it once for all terms in output map
-        System.out.println(tf);
+        Map<String, Map<String, Double>> tf = tfidf.tfCalculator(queryArray[0], fileLengths);//need to call it once for all terms in output map
+//        System.out.println(tf);
+//        System.out.println(output.get(queryArray[0]).entrySet().size());//returns total amount of relevant documents
+        idf_array[0] = tfidf.idfCalculator(fileCount, queryArray[0]);
 //        Object[] arr = output.entrySet().toArray();
-//        System.out.println(Arrays.toString(arr));
+        System.out.println(Arrays.toString(idf_array));
 //        System.out.println("total files: "+fileCounter);
 //        String[] str = null;
 //        double count = TfIdf.tfCalculator(str, "skin");

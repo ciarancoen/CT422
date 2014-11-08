@@ -38,6 +38,7 @@ public class TfIdf { // /** * Calculated the tf of term termToCheck *
             filename=amountOfATermInADocument[0];
 //            System.out.println(Arrays.toString(amountOfATermInADocument));
 //            System.out.println("\""+amountOfATermInADocument[0]+"\"");
+            
 //            System.out.println(fileLengths.get(amountOfATermInADocument[0]));
             docLength=fileLengths.get(filename);
 //            System.out.println("docLength: "+docLength);

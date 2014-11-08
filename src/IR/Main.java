@@ -35,6 +35,7 @@ public class Main {
         Map<String, Map<String, Integer>> output = new HashMap<String, Map<String, Integer>>();
         
 //      Output of TFIDF calculations: Key = term, value= TFIDF(term)
+        
         Map<String, Map<String, Integer>> termFreqMap = new HashMap<String, Map<String, Integer>>();
 
         input = parseDocuments(documentsPath);

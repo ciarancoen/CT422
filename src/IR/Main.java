@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import snowball.*;
 import java.io.*;
 import java.lang.StringBuilder;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;

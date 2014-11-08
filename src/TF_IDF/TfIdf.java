@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 public class TfIdf { // /** * Calculated the tf of term termToCheck * 
 //@param totalterms : Array of all the words under processing document * @param termToCheck : term of which tf is to be calculated. * @return tf(term frequency) of term termToCheck */ 
     static Map<String, Map<String, Integer>> output = new HashMap<String, Map<String, Integer>>();

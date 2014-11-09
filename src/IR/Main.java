@@ -1,195 +1,39 @@
 package IR;
 
-import IR.Helpers;
-import MapReduce.*;
-import java.lang.reflect.Method;
-import snowball.*;
-import java.io.*;
+import IR.DocumentSet;
+import TF_IDF.TfIdf;
 import java.lang.StringBuilder;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
-import TF_IDF.TfIdf;
-import java.util.Arrays;
-import java.util.Map.Entry;
-import java.util.Set;
 
 // NOTE: to use the snowball stemmer, include the stemmer.jar in classpath
 // when compiling and running
 
 public class Main {
-    static int fileCount =0;
-    static Map<String, Double> fileLengths = new HashMap<String, Double>();
-    
 	public static void main(String[] args) {
             // folder for documents
             String documentsPath = "documents";
-
-            // input & output for MapReduce
-            Map<String, String> input = new HashMap<String, String>();
-            Map<String, Map<String, Integer>> output = new HashMap<String, Map<String, Integer>>();
-
-    //      Output of TFIDF calculations: Key = term, value= TFIDF(term)
-
-            Map<String, Map<String, Integer>> termFreqMap = new HashMap<String, Map<String, Integer>>();
-
-            input = parseDocuments(documentsPath);
-            output = mapReduce(input);
+            DocumentSet docSet = new DocumentSet(documentsPath);
 
     //      Can use args[] from command line to input queries
-//            String[] queryArray = {"autoimmune", "hemolytic", "anemia"};//can use something like this for storing all the query terms
             String[] queryArray = {"the", "crystalline", "lens", "in", "vertebrates", "including", "humans"};
-            List<String> queryList= new ArrayList<String>();
-            //should return doc 24.txt first
+            List<String> query = docSet.processQuery(queryArray);
 
-            // query pre-processing
-            for(String q : queryArray){
-                q = q.toLowerCase();
+            TfIdf tfidf = new TfIdf(docSet.termIndex(), docSet.fileLengths(), docSet.fileCount());
 
-                if ( Helpers.isStopWord(q) ) {
-                    // if the word is a stop word, skip it
-                    continue;
-                }
-                else {                                        
-                    q = Helpers.stemWord(q);
-                    queryList.add(q);
-                }
+            // Adds all term frequencies to same map
+            Map<String, Map<String, Double>> weights = new HashMap<String, Map<String, Double>>();
+
+            for(int i=0;i<query.size();i++){
+                weights.putAll(tfidf.tf_idf( query.get(i) )); //need to call it once for all terms in output map
             }
-            System.out.println("Queries: "+queryList.toString());
 
-            TfIdf tfidf = new TfIdf(output);//1 TfIdf object can be used for all the indexing
-            double[] idf_array = new double[queryList.size()];
-
-            //Adds all term frequencies to same map
-            Map<String, Map<String, Double>> tf = new HashMap<String, Map<String, Double>>();
-            for(int i=0;i<queryList.size();i++){
-                tf.putAll(tfidf.tfCalculator(queryList.get(i), fileLengths));//need to call it once for all terms in output map
-                idf_array[i] = tfidf.idfCalculator(fileCount, queryList.get(i));
-            }
-            System.out.println("\n\ntf map: "+tf);
-    //        System.out.println(output.get(queryArray[0]).entrySet().size());//returns total amount of relevant documents
-
-    //        Object[] arr = output.entrySet().toArray();
-            System.out.println("\n\nidf array: "+Arrays.toString(idf_array));
-
-            for(int i=0;i<tf.keySet().size();i++){
-                Set<Map.Entry<String, Double>> entries = tf.get(queryList.get(i)).entrySet();
-                for (Map.Entry entry : entries) {//loop thru all occurrences of term
-                    double weighting = (double)entry.getValue()*idf_array[i];
-                    entry.setValue(weighting);  //replaces tf with tf*idf.
-    //                System.out.println(entry);
-                }
-            }
-            System.out.println("\n\ntfidf map: "+tf);
+            System.out.println("\n\ntfidf map: " + weights);
 	}
 //    TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document)
 //    IDF(t) = log(Total number of documents / Number of documents with term t in it).
-
-    public static Map<String, String> parseDocuments(String folderPath) {
-        File[] files;
-        double fileLength =0;
-        // get a list of all the docs
-        files = new File(folderPath).listFiles();
-        fileCount = files.length;
-
-        Map<String, String> map = new HashMap<String, String>();        
-        
-        // process the files
-        for (File f : files) {
-            StringBuilder str = new StringBuilder(""); // creates a string of document for HashMap
-
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(f));
-                String line;
-
-                // reads a line at a time
-                while ((line = reader.readLine()) != null) {
-                    // split line into words (removes all punctuation & whitespace)
-                    String[] wordsArray = line.split("[\\p{P} \\t\\n\\r]");
-                     
-                    for (String word : wordsArray) {
-                    // for consistency etc.
-                    word = word.toLowerCase();
-
-                    if ( Helpers.isStopWord(word) ) {
-                            // if the word is a stop word, skip it
-                            continue;
-                    }
-                    else {                                        
-                        word = Helpers.stemWord(word);
-
-                        str.append(word).append(" ");
-                        
-                        //counting file length [will be added to the map key]
-                        fileLength ++;                   
-                    }
-                }
-//                    System.out.println(f.getName()+Arrays.toString(wordsArray));
-            }// end while
-                             
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            // add to map
-            map.put(f.getName(), str.toString());
-            fileLengths.put(f.getName(), fileLength);
-            fileLength =0;//reset counter
-        } // end for
-        
-        return map;
-    }
-
-
-    // cpoied from MapReduce example class
-    public static Map<String, Map<String, Integer>> mapReduce(Map<String, String> input) {
-        Map<String, Map<String, Integer>> output = new HashMap<String, Map<String, Integer>>();
-
-        // MAP:               
-        List<MappedItem> mappedItems = new LinkedList<MappedItem>();
-                
-        Iterator<Map.Entry<String, String>> inputIter = input.entrySet().iterator();
-        while(inputIter.hasNext()) {
-            Map.Entry<String, String> entry = inputIter.next();
-            String file = entry.getKey();
-            String contents = entry.getValue();
-                               
-            MapReduce.map(file, contents, mappedItems);
-        }
-        
-
-        // GROUP:              
-        Map<String, List<String>> groupedItems = new HashMap<String, List<String>>();
-                       
-        Iterator<MappedItem> mappedIter = mappedItems.iterator();
-        while(mappedIter.hasNext()) {
-            MappedItem item = mappedIter.next();
-            String word = item.getWord();
-            String file = item.getFile();
-            List<String> list = groupedItems.get(word);
-            if (list == null) {
-                    list = new LinkedList<String>();
-                    groupedItems.put(word, list);
-            }
-            list.add(file);
-        }               
-
-
-        // REDUCE:
-        Iterator<Map.Entry<String, List<String>>> groupedIter = groupedItems.entrySet().iterator();
-        while(groupedIter.hasNext()) {
-            Map.Entry<String, List<String>> entry = groupedIter.next();
-            String word = entry.getKey();
-            List<String> list = entry.getValue();
-                               
-            MapReduce.reduce(word, list, output);
-        }
-
-        return output;
-    }
-
 
 }

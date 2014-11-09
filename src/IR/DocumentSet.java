@@ -1,17 +1,35 @@
 package IR;
 
+import TF_IDF.TfIdf;
+import MapReduce.*;
+
 import java.lang.reflect.Method;
 import snowball.*;
-import java.util.Hashtable;
 import java.io.*;
+import java.lang.StringBuilder;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Arrays;
+import java.util.Map.Entry;
+import java.util.Set;
 
+// This class is a container for the document set + any functions
+// needed to create the set.
 
-public class Helpers {
+public class DocumentSet {
 
-    static String[] stopWordsArray ={
+	private int fileCount =0;
+    private Map<String, Double> fileLengths = new HashMap<String, Double>();
+
+    private Map<String, Map<String, Integer>> termIndex = new HashMap<String, Map<String, Integer>>();
+
+    private String[] stopWordsArray ={
 		"", " ", "a", "able", "about", "above", "according", "accordingly", "across", "actually", "after", "afterwards", "again", "against",
 		"ain't", "all", "allow", "allows", "almost", "alone", "along", "already", "also", "although", "always", "am", "among",
 		"amongst", "an", "and", "another", "any", "anybody", "anyhow", "anyone", "anything", "anyway", "anyways", "anywhere",
@@ -52,9 +70,14 @@ public class Helpers {
 		"wouldn't", "yes", "yet", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves", "zero"
 	};
     	
-    	static List<String> stopWordsList = Arrays.asList(stopWordsArray);
+    private List<String> stopWordsList = Arrays.asList(stopWordsArray);
+
+    public DocumentSet(String folder) {
+    	// initialise document set
+        termIndex = mapReduce( parseDocuments(folder) );
+    }
     	
-	public static String stemWord(String word) {
+	private String stemWord(String word) {
 		SnowballStemmer stemmer = null;
 
     	try {
@@ -70,7 +93,7 @@ public class Helpers {
         return stemmer.getCurrent();
 	}
 
-	public static boolean isStopWord(String word) {
+	private boolean isStopWord(String word) {
 		// check is word is stop word
             
             if ( stopWordsList.contains(word)) {
@@ -79,4 +102,140 @@ public class Helpers {
 		
 	return false;
 	}
+
+
+	private Map<String, String> parseDocuments(String folderPath) {
+        File[] files;
+        double fileLength =0;
+        // get a list of all the docs
+        files = new File(folderPath).listFiles();
+        fileCount = files.length;
+
+        Map<String, String> map = new HashMap<String, String>();        
+        
+        // process the files
+        for (File f : files) {
+            StringBuilder str = new StringBuilder(""); // creates a string of document for HashMap
+
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(f));
+                String line;
+
+                // reads a line at a time
+                while ((line = reader.readLine()) != null) {
+                    // split line into words (removes all punctuation & whitespace)
+                    String[] wordsArray = line.split("[\\p{P} \\t\\n\\r]");
+                     
+                    for (String word : wordsArray) {
+                    // for consistency etc.
+                    word = word.toLowerCase();
+
+                    if ( isStopWord(word) ) {
+                            // if the word is a stop word, skip it
+                            continue;
+                    }
+                    else {                                        
+                        word = stemWord(word);
+
+                        str.append(word).append(" ");
+                        
+                        //counting file length [will be added to the map key]
+                        fileLength ++;                   
+                    }
+                }
+            }// end while
+                             
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // add to map
+            map.put(f.getName(), str.toString());
+            fileLengths.put(f.getName(), fileLength);
+            fileLength = 0;
+        } // end for
+        
+        return map;
+    }
+
+
+    // cpoied from MapReduce example class
+    private Map<String, Map<String, Integer>> mapReduce(Map<String, String> input) {
+        Map<String, Map<String, Integer>> output = new HashMap<String, Map<String, Integer>>();
+
+        // MAP:               
+        List<MappedItem> mappedItems = new LinkedList<MappedItem>();
+                
+        Iterator<Map.Entry<String, String>> inputIter = input.entrySet().iterator();
+        while(inputIter.hasNext()) {
+            Map.Entry<String, String> entry = inputIter.next();
+            String file = entry.getKey();
+            String contents = entry.getValue();
+                               
+            MapReduce.map(file, contents, mappedItems);
+        }
+        
+
+        // GROUP:              
+        Map<String, List<String>> groupedItems = new HashMap<String, List<String>>();
+                       
+        Iterator<MappedItem> mappedIter = mappedItems.iterator();
+        while(mappedIter.hasNext()) {
+            MappedItem item = mappedIter.next();
+            String word = item.getWord();
+            String file = item.getFile();
+            List<String> list = groupedItems.get(word);
+            if (list == null) {
+                    list = new LinkedList<String>();
+                    groupedItems.put(word, list);
+            }
+            list.add(file);
+        }               
+
+
+        // REDUCE:
+        Iterator<Map.Entry<String, List<String>>> groupedIter = groupedItems.entrySet().iterator();
+        while(groupedIter.hasNext()) {
+            Map.Entry<String, List<String>> entry = groupedIter.next();
+            String word = entry.getKey();
+            List<String> list = entry.getValue();
+                               
+            MapReduce.reduce(word, list, output);
+        }
+
+        return output;
+    }
+
+    // process query list
+    public List<String> processQuery(String[] query) {
+    	List<String> queryList= new ArrayList<String>();
+            //should return doc 24.txt first
+
+            // query pre-processing
+            for(String q : query) {
+                q = q.toLowerCase();
+
+            if ( isStopWord(q) ) {
+                continue;
+            }
+            else {                                        
+                q = stemWord(q);
+                queryList.add(q);
+            }
+        }
+
+        return queryList;
+    }
+
+
+     // getters
+    public int fileCount() {
+    	return fileCount;
+    }
+    public Map<String, Double> fileLengths() {
+    	return fileLengths;
+    }
+    public Map<String, Map<String, Integer>> termIndex() {
+    	return termIndex;
+    }
 }

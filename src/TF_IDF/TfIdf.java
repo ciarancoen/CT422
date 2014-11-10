@@ -55,10 +55,10 @@ public class TfIdf {
 
 //    IDF(t) = log(Total number of documents / Number of documents with term t in it). 
     private double idf(String term) { 
-        if(termIndex.containsKey(term)){
+        if(termIndex.containsKey(term)) {
             double relevantDocCount = termIndex.get(term).entrySet().size();
         
-        return Math.log10(fileCount / relevantDocCount); 
+            return Math.log10(fileCount / relevantDocCount); 
         }
         return 0;
     }

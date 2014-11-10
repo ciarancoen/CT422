@@ -20,7 +20,7 @@ public class Main {
 
     //      Can use args[] from command line to input queries
             String[] queryArray = {"the", "crystalline", "lens", "in", "vertebrates", "including", "humans"};
-            List<String> query = docSet.processQuery(queryArray);
+            List<String> query = Queries.processQuery(queryArray);
 
             TfIdf tfidf = new TfIdf(docSet.termIndex(), docSet.fileLengths(), docSet.fileCount());
 

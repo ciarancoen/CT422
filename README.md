@@ -6,6 +6,5 @@ including MapReduce, stemming and stop-word removal.
 
 Contributors:
 Ciarán Coen,
-Nathan Flynn
+Nathan Flynn,
 Niall O'Brien
-

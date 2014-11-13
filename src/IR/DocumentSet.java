@@ -53,8 +53,8 @@ public class DocumentSet {
 
                 // reads a line at a time
                 while ((line = reader.readLine()) != null) {
-                    // split line into words (removes all punctuation & whitespace)
-                    String[] wordsArray = line.split("[\\p{P} \\t\\n\\r]");
+                    // split line into words (removes all punctuation except apostrophes)
+                    String[] wordsArray = line.split("[^a-zA-Z0-9']+");
                      
                     for (String word : wordsArray) {
                     // for consistency etc.

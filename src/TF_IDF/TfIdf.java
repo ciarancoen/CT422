@@ -10,6 +10,7 @@ public class TfIdf {
 
     private Map<String, Map<String, Integer>> termIndex = new HashMap<String, Map<String, Integer>>();
     private Map<String, Double> fileLengths;
+    private Map<String, Double>queryTFIDF = new HashMap<String, Double>();
     private int fileCount;
 
     public TfIdf(Map<String, Map<String, Integer>> index, Map<String, Double> lengths, int count){
@@ -46,6 +47,7 @@ public class TfIdf {
                 TF = Double.parseDouble(amountOfATermInADocument[1]) / docLength;
                 termFreqFileName.put(filename, TF * idf(term));
             }
+            queryTFIDF.put(term, 0.5 * idf(term));
         }
 
         resultMap.put(term, termFreqFileName);
@@ -62,4 +64,9 @@ public class TfIdf {
         }
         return 0;
     }
+    
+    public Map<String, Double> get_query_TFIDF_Map(String term) {
+        return queryTFIDF;
+    }
+    
 }

@@ -22,7 +22,7 @@ import java.util.Set;
 
 public class DocumentSet {
 
-	private int fileCount =0;
+    private int fileCount =0;
     private Map<String, Double> fileLengths = new HashMap<String, Double>();
     private Map<String, Map<String, Integer>> termIndex = new HashMap<String, Map<String, Integer>>();
 
@@ -32,7 +32,7 @@ public class DocumentSet {
         termIndex = mapReduce( parseDocuments(folder) );
     }
 
-	private Map<String, String> parseDocuments(String folderPath) {
+    private Map<String, String> parseDocuments(String folderPath) {
         File[] files;
         double fileLength = 0;
         // get a list of all the docs

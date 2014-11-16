@@ -52,16 +52,19 @@ public class Similarity {
 
 	// similarity function
 	public double similarity(Map<String, Double> query, Map<String, Double> document) {
-		Double x=(double) 0;
-		Double y=(double) 0;
-		Double z=(double) 0;
+		double x=0.0;
+		double y=0.0;
+		double z=0.0;
+                
 		for(Map.Entry<String, Double> documentEntry : document.entrySet()){
-            x += documentEntry.getValue()*documentEntry.getValue();
-        }
+                    x += documentEntry.getValue()*documentEntry.getValue();
+                }
+                
 		for(Map.Entry<String, Double> queryEntry : query.entrySet()){
-            y += queryEntry.getValue()*queryEntry.getValue();
-            z += queryEntry.getValue()*document.get(queryEntry.getKey());
-        }
+                    y += queryEntry.getValue()*queryEntry.getValue();
+                    z += queryEntry.getValue()*document.get(queryEntry.getKey());
+                }
+                
 		z=z/Math.sqrt(y)*Math.sqrt(x);
 		return z;
 	}

@@ -20,24 +20,26 @@ public class Main {
             DocumentSet docSet = new DocumentSet(documentsPath);
 
     //      Can use args[] from command line to input queries
-            String[] queryArray = {"the", "crystalline", "coefficients", "in", "including", "fetal", "humans"};
+            
+//          Query #1: 1.txt
+            String[] queryArray = {"the", "crystalline", "lens", "in", "vertebrates", "including", "humans"};
             List<String> query = Queries.processQuery(queryArray);
 
             TfIdf tfidf = new TfIdf(docSet.termIndex(), docSet.fileLengths(), docSet.fileCount());
 
-            // Adds all term frequencies to same map
             Map<String, Map<String, Double>> weights = new HashMap<String, Map<String, Double>>();
-
+            Map<String, Double>queryWeightsMap = new HashMap<String, Double>();
+            
+            // Adds all term frequencies to same map:            
             for(int i=0;i<query.size();i++){
                 weights.putAll(tfidf.tf_idf( query.get(i) )); //need to call it once for all terms in output map
+                queryWeightsMap.putAll(tfidf.get_query_TFIDF_Map(query.get(i)));
             }
 
-            //System.out.println("\n\ntfidf map: " + weights);
+            System.out.println("\n\nQuery tfidf map: " + queryWeightsMap);
 
             printMap( Similarity.convertMap(weights) );
 	}
-//    TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document)
-//    IDF(t) = log(Total number of documents / Number of documents with term t in it).
 
         public static void printMap(Map<String, Map<String, Double>> map) {
         Iterator it = map.entrySet().iterator();

@@ -1,15 +1,12 @@
 package IR;
 
-import IR.DocumentSet;
 import TF_IDF.*;
 import java.awt.EventQueue;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
-import java.util.Map.Entry;
 
 // NOTE: to use the snowball stemmer, include the stemmer.jar in classpath
 // when compiling and running
@@ -38,7 +35,7 @@ public class Main {
 //            String[] queryArray = {"the", "crystalline", "lens", "in", "vertebrates", "including", "humans"};
         List<String> query = Queries.processQuery(queryArray);
 
-        TfIdf tfidf = new TfIdf(docSet.termIndex(), docSet.fileLengths(), docSet.fileCount());
+        TfIdf tfidf = new TfIdf(docSet.termIndex(), docSet.fileLengths(), docSet.fileCount(), query);
 
         Map<String, Map<String, Double>> weights = new HashMap<String, Map<String, Double>>();
         Map<String, Double> queryWeights = new HashMap<String, Double>();
@@ -49,7 +46,7 @@ public class Main {
             queryWeights.putAll(tfidf.get_query_TFIDF_Map(query.get(i)));
         }
 
-//            System.out.println("\n\nQuery tfidf map: " + queryWeightsMap);
+            System.out.println("\n\nQuery tfidf map: " + queryWeights+"\n\n");
 
         //printMap( Similarity.convertMap(weights) );
 

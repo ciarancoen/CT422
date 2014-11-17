@@ -1,6 +1,7 @@
 package TF_IDF;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,12 +13,14 @@ public class TfIdf {
     private Map<String, Double> fileLengths;
     private Map<String, Double>queryTFIDF = new HashMap<String, Double>();
     private int fileCount;
+    private List<String> query;
 
-    public TfIdf(Map<String, Map<String, Integer>> index, Map<String, Double> lengths, int count){
+    public TfIdf(Map<String, Map<String, Integer>> index, Map<String, Double> lengths, int count, List<String> queryList){
         // Only passing this huge hashmap in once for efficiency
         termIndex = index;
         fileCount = count;
         fileLengths = lengths;
+        query = queryList;
 
     }
     
@@ -47,7 +50,6 @@ public class TfIdf {
                 TF = Double.parseDouble(amountOfATermInADocument[1]) / docLength;
                 termFreqFileName.put(filename, TF * idf(term));
             }
-            queryTFIDF.put(term, 0.5 * idf(term));
         }
 
         resultMap.put(term, termFreqFileName);
@@ -65,7 +67,24 @@ public class TfIdf {
         return 0;
     }
     
-    public Map<String, Double> get_query_TFIDF_Map(String term) {
+//    public Map<String, Double> get_query_TFIDF_Map(String term, List<String> query) {
+//        //get tf for all query terms, multiply by IDF
+//        return queryTFIDF;
+//    }
+    
+    public Map<String, Double> get_query_TFIDF_Map(String term) {       
+//        Set<Map.Entry<String, Integer>> entries;
+
+        if(termIndex.containsKey(term)){
+//            for(int i=0;i<query.size();i++){
+                double tf = Collections.frequency(query, term);
+                System.out.println(tf+" occurrences of "+ term);
+                tf = tf/query.size();
+                
+//            }
+//            entries = termIndex.get(term).entrySet();//returns only the term set
+            queryTFIDF.put(term, tf * idf(term));
+        }
         return queryTFIDF;
     }
     

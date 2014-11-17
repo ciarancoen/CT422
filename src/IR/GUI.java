@@ -30,24 +30,25 @@ public class GUI {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					GUI window = new GUI();
-					window.frmInformationRetrievalSystem.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					GUI window = new GUI();
+//					window.frmInformationRetrievalSystem.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Create the application.
 	 */
 	public GUI() {
 		initialize();
+                this.frmInformationRetrievalSystem.setVisible(true);
 	}
 
 	/**
@@ -133,7 +134,7 @@ public class GUI {
 				progressBar.setValue(progressBar.getValue()+10);
                                 String[] queryTerms = query.getText().split(" ");
                                 String path = directory.getText();
-                                Main.main(queryTerms, path);
+                                Main.kontroller(queryTerms, path);
 			}
 		});
 		searchBtn.setIcon(new ImageIcon("images\\search-button-green-icon.png"));

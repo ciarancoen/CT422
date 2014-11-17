@@ -2,6 +2,7 @@ package IR;
 
 import IR.DocumentSet;
 import TF_IDF.*;
+import java.awt.EventQueue;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -14,34 +15,56 @@ import java.util.Map.Entry;
 // when compiling and running
 
 public class Main {
-	public static void main(String[] queryArray, String documentsPath) {
-            // folder for documents
+	public static void main(String[] args) {
+            EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    try {
+                            GUI window = new GUI();
+                    } catch (Exception e) {
+                            e.printStackTrace();
+                    }
+                }
+		});
+        }
+        
+    public static void kontroller(String[] queryArray, String documentsPath) {
+        // folder for documents
 //            String documentsPath = "documents";
-            DocumentSet docSet = new DocumentSet(documentsPath);
+        DocumentSet docSet = new DocumentSet(documentsPath);
 
-    //      Can use args[] from command line to input queries
-            
+        //      Can use args[] from command line to input queries
+
 //          Query #1: 1.txt
 //            String[] queryArray = {"the", "crystalline", "lens", "in", "vertebrates", "including", "humans"};
-            List<String> query = Queries.processQuery(queryArray);
+        List<String> query = Queries.processQuery(queryArray);
 
-            TfIdf tfidf = new TfIdf(docSet.termIndex(), docSet.fileLengths(), docSet.fileCount());
+        TfIdf tfidf = new TfIdf(docSet.termIndex(), docSet.fileLengths(), docSet.fileCount());
 
-            Map<String, Map<String, Double>> weights = new HashMap<String, Map<String, Double>>();
-            Map<String, Double>queryWeightsMap = new HashMap<String, Double>();
-            
-            // Adds all term frequencies to same map:            
-            for(int i=0;i<query.size();i++){
-                weights.putAll(tfidf.tf_idf( query.get(i) )); //need to call it once for all terms in output map
-                queryWeightsMap.putAll(tfidf.get_query_TFIDF_Map(query.get(i)));
-            }
+        Map<String, Map<String, Double>> weights = new HashMap<String, Map<String, Double>>();
+        Map<String, Double> queryWeights = new HashMap<String, Double>();
 
-            System.out.println("\n\nQuery tfidf map: " + queryWeightsMap);
+        // Adds all term frequencies to same map:            
+        for (int i = 0; i < query.size(); i++) {
+            weights.putAll(tfidf.tf_idf(query.get(i)));
+            queryWeights.putAll(tfidf.get_query_TFIDF_Map(query.get(i)));
+        }
 
-            printMap( Similarity.convertMap(weights) );
-	}
+//            System.out.println("\n\nQuery tfidf map: " + queryWeightsMap);
 
-        public static void printMap(Map<String, Map<String, Double>> map) {
+        //printMap( Similarity.convertMap(weights) );
+
+        Iterator it = Similarity.convertMap(weights).entrySet().iterator();
+
+        while (it.hasNext()) {
+            Map.Entry entry = (Map.Entry) it.next();
+            Map weight = (HashMap) entry.getValue();
+
+            System.out.println(entry.getKey() + " : " + Similarity.similarity(queryWeights, weight));
+        }
+
+    }
+
+    public static void printMap(Map<String, Map<String, Double>> map) {
         Iterator it = map.entrySet().iterator();
 
         while (it.hasNext()) {

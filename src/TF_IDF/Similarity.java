@@ -51,7 +51,7 @@ public class Similarity {
 
 
 	// similarity function
-	public double similarity(Map<String, Double> query, Map<String, Double> document) {
+	public static double similarity(Map<String, Double> query, Map<String, Double> document) {
 		double x=0.0;
 		double y=0.0;
 		double z=0.0;
@@ -62,6 +62,7 @@ public class Similarity {
                 
 		for(Map.Entry<String, Double> queryEntry : query.entrySet()){
                     y += queryEntry.getValue()*queryEntry.getValue();
+                    
 		    if (document.get(queryEntry.getKey()) != null)
                 	z += queryEntry.getValue()*document.get(queryEntry.getKey());
                 }

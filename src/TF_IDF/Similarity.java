@@ -62,7 +62,8 @@ public class Similarity {
                 
 		for(Map.Entry<String, Double> queryEntry : query.entrySet()){
                     y += queryEntry.getValue()*queryEntry.getValue();
-                    z += queryEntry.getValue()*document.get(queryEntry.getKey());
+		    if (document.get(queryEntry.getKey()) != null)
+                	z += queryEntry.getValue()*document.get(queryEntry.getKey());
                 }
                 
 		z=z/Math.sqrt(y)*Math.sqrt(x);

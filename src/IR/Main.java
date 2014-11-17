@@ -14,15 +14,15 @@ import java.util.Map.Entry;
 // when compiling and running
 
 public class Main {
-	public static void main(String[] args) {
+	public static void main(String[] queryArray, String documentsPath) {
             // folder for documents
-            String documentsPath = "documents";
+//            String documentsPath = "documents";
             DocumentSet docSet = new DocumentSet(documentsPath);
 
     //      Can use args[] from command line to input queries
             
 //          Query #1: 1.txt
-            String[] queryArray = {"the", "crystalline", "lens", "in", "vertebrates", "including", "humans"};
+//            String[] queryArray = {"the", "crystalline", "lens", "in", "vertebrates", "including", "humans"};
             List<String> query = Queries.processQuery(queryArray);
 
             TfIdf tfidf = new TfIdf(docSet.termIndex(), docSet.fileLengths(), docSet.fileCount());

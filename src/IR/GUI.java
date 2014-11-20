@@ -1,26 +1,8 @@
 package IR;
 
-import java.awt.EventQueue;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.SpringLayout;
-import javax.swing.JLabel;
-import java.awt.Font;
-import javax.swing.JTextField;
-import java.awt.Toolkit;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JToggleButton;
-import javax.swing.JTextPane;
-import javax.swing.ImageIcon;
-import javax.swing.JProgressBar;
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,6 +14,7 @@ public class GUI {
     private JTextField directory;
     private JTextField query;
     private JLabel lblQuery;
+    private JTextArea results;
     JFileChooser chooser;
 
     /**
@@ -47,32 +30,44 @@ public class GUI {
      */
     private void initialize() {
         frmInformationRetrievalSystem = new JFrame();
+        Container content = frmInformationRetrievalSystem.getContentPane();
+
         frmInformationRetrievalSystem.setIconImage(Toolkit.getDefaultToolkit().getImage("images\\gnome_text_x_generic.png"));
         frmInformationRetrievalSystem.setTitle("Information  Retrieval System");
         frmInformationRetrievalSystem.setBounds(100, 100, 700, 600);
+        frmInformationRetrievalSystem.setResizable(false);
         frmInformationRetrievalSystem.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frmInformationRetrievalSystem.getContentPane().setLayout(null);
+        content.setLayout(null);
 
         JLabel lblDirectory = new JLabel("Directory:");
         lblDirectory.setBounds(17, 40, 80, 17);
         lblDirectory.setFont(new Font("Consolas", Font.PLAIN, 14));
-        frmInformationRetrievalSystem.getContentPane().add(lblDirectory);
+        content.add(lblDirectory);
 
         directory = new JTextField();
         directory.setFont(new Font("Consolas", Font.PLAIN, 14));
         directory.setBounds(96, 33, 530, 30);
-        directory.setText("C:\\");
-        frmInformationRetrievalSystem.getContentPane().add(directory);
+        directory.setText("documents");
+        content.add(directory);
         directory.setColumns(10);		
 
         final JProgressBar progressBar = new JProgressBar();
         progressBar.setBounds(96, 131, 530, 23);
-        frmInformationRetrievalSystem.getContentPane().add(progressBar);          
+        content.add(progressBar);          
 
         lblQuery = new JLabel("Query:");
         lblQuery.setFont(new Font("Consolas", Font.PLAIN, 14));
         lblQuery.setBounds(17, 97, 80, 17);
-        frmInformationRetrievalSystem.getContentPane().add(lblQuery);
+        content.add(lblQuery);
+
+        results = new JTextArea();
+        results.setFont(new Font("Consolas", Font.PLAIN, 14));
+        results.setEditable(false);
+        results.setLineWrap(true);
+        results.setWrapStyleWord(true);
+        JScrollPane scroll = new JScrollPane(results);
+        scroll.setBounds(17, 200, 653, 330);
+        content.add(scroll);
 
         JButton Browse = new JButton("...");
         Browse.addActionListener(new ActionListener() {
@@ -102,7 +97,7 @@ public class GUI {
             }
         });
         Browse.setBounds(636, 33, 32, 30);
-        frmInformationRetrievalSystem.getContentPane().add(Browse);
+        content.add(Browse);
 
         final JButton searchBtn = new JButton("");
         searchBtn.addMouseListener(new MouseAdapter() {
@@ -116,7 +111,9 @@ public class GUI {
                             query.setBackground(Color.GREEN);
                             String[] queryTerms = query.getText().split(" ");
                             String filePath = directory.getText();
-                            Main.kontroller(queryTerms, filePath);                                   
+
+                            // call the main function
+                            Main.querySystem(queryTerms, filePath);                                   
                         }
                         else{
                             query.setBackground(Color.RED);
@@ -134,13 +131,13 @@ public class GUI {
         searchBtn.setIcon(new ImageIcon("images\\search-button-green-icon.png"));
         searchBtn.setFont(new Font("Consolas", Font.PLAIN, 11));
         searchBtn.setBounds(636, 90, 32, 30);
-        frmInformationRetrievalSystem.getContentPane().add(searchBtn);
+        content.add(searchBtn);
 
 
         final Canvas canvas = new Canvas();
         canvas.setBackground(Color.WHITE);
         canvas.setBounds(17, 160, 651, 391);
-        frmInformationRetrievalSystem.getContentPane().add(canvas);
+        content.add(canvas);
 
         query = new JTextField();
         query.addKeyListener(new KeyAdapter() {
@@ -155,7 +152,8 @@ public class GUI {
                                     query.setBackground(Color.GREEN);
                                     String[] queryTerms = query.getText().split(" ");
                                     String filePath = directory.getText();
-                                    Main.kontroller(queryTerms, filePath);                                   
+
+                                    Main.querySystem(queryTerms, filePath);                                   
                                 }
                                 else{
                                     query.setBackground(Color.RED);
@@ -194,6 +192,11 @@ public class GUI {
         query.setText("the crystalline lens in vertebrates including humans");
         query.setColumns(10);
         query.setBounds(96, 90, 530, 30);
-        frmInformationRetrievalSystem.getContentPane().add(query);
+        content.add(query);
+    }
+
+    // prints input to window
+    public <I>void print(I input) {
+        results.append(input.toString() +"\n\n");
     }
 }

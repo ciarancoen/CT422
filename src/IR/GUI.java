@@ -21,6 +21,8 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,7 +39,7 @@ public class GUI {
     /**
      * Create the application.
      */
-    public GUI() {
+    public GUI() throws FileNotFoundException {
         initialize();
         this.frmInformationRetrievalSystem.setVisible(true);
     }
@@ -45,7 +47,7 @@ public class GUI {
     /**
      * Initialize the contents of the frame.
      */
-    private void initialize() {
+    private void initialize() throws FileNotFoundException {
         frmInformationRetrievalSystem = new JFrame();
         frmInformationRetrievalSystem.setIconImage(Toolkit.getDefaultToolkit().getImage("images\\gnome_text_x_generic.png"));
         frmInformationRetrievalSystem.setTitle("Information  Retrieval System");
@@ -111,16 +113,20 @@ public class GUI {
                 try{
                     Path path = Paths.get(directory.getText());
                     if (Files.exists(path)) {
-                        directory.setBackground(Color.GREEN);
-                        if(query.getText().length()>=1){
-                            query.setBackground(Color.GREEN);
-                            String[] queryTerms = query.getText().split(" ");
-                            String filePath = directory.getText();
-                            Main.kontroller(queryTerms, filePath);                                   
-                        }
-                        else{
-                            query.setBackground(Color.RED);
-                        }
+                        File file = new File(directory.getText());
+                        if(file.list().length>0){//fix this!!!!!!!!!!!!!!!!!!!!!!!
+                            directory.setBackground(Color.GREEN);
+                            if(query.getText().length()>=1){
+                                query.setBackground(Color.GREEN);
+                                String[] queryTerms = query.getText().split(" ");
+                                String filePath = directory.getText();
+                                Main.kontroller(queryTerms, filePath);                                
+                            }
+                            else{
+                                query.setBackground(Color.RED);
+                            }
+                        }                        
+                        
                     }
                     else{
                         directory.setBackground(Color.RED);
@@ -155,7 +161,10 @@ public class GUI {
                                     query.setBackground(Color.GREEN);
                                     String[] queryTerms = query.getText().split(" ");
                                     String filePath = directory.getText();
-                                    Main.kontroller(queryTerms, filePath);                                   
+                                    try{
+                                        Main.kontroller(queryTerms, filePath);
+                                    }
+                                    catch(Exception ex){}                       
                                 }
                                 else{
                                     query.setBackground(Color.RED);

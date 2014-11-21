@@ -76,7 +76,7 @@ public class DocumentSet {
             }// end while
                              
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("Skipping file: " +f.getName());
             }
 
             // add to map

@@ -39,7 +39,6 @@ public class DocumentSet {
         files = new File(folderPath).listFiles();
         fileCount = files.length;
 
-
         Preprocessor preprocessor = new Preprocessor();
         Map<String, String> map = new HashMap<String, String>();        
         

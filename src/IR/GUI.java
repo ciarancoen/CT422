@@ -14,6 +14,7 @@ public class GUI {
 
     private JFrame frmInformationRetrievalSystem;
     private JTextField directory;
+    private JTextField queryDirectory;
     private JTextField query;
     private JLabel lblQuery;
     private JTextArea results;
@@ -48,18 +49,31 @@ public class GUI {
 
         directory = new JTextField();
         directory.setFont(new Font("Consolas", Font.PLAIN, 14));
-        directory.setBounds(96, 33, 530, 30);
+        directory.setBounds(100, 33, 524, 30);
         directory.setText("documents");
         content.add(directory);
-        directory.setColumns(10);		
+        directory.setColumns(10);
 
-        final JProgressBar progressBar = new JProgressBar();
-        progressBar.setBounds(96, 131, 530, 23);
-        content.add(progressBar);          
+
+        JLabel queryDirLabel = new JLabel("Query Dir:");
+        queryDirLabel.setBounds(17, 170, 80, 17);
+        queryDirLabel.setFont(new Font("Consolas", Font.PLAIN, 14));
+        content.add(queryDirLabel);
+
+        queryDirectory = new JTextField();
+        queryDirectory.setFont(new Font("Consolas", Font.PLAIN, 14));
+        queryDirectory.setBounds(100, 163, 524, 30);
+        queryDirectory.setText("queries");
+        content.add(queryDirectory);
+        queryDirectory.setColumns(10);   		
+
+        // final JProgressBar progressBar = new JProgressBar();
+        // progressBar.setBounds(100, 131, 530, 23);
+        // content.add(progressBar);          
 
         lblQuery = new JLabel("Query:");
         lblQuery.setFont(new Font("Consolas", Font.PLAIN, 14));
-        lblQuery.setBounds(17, 97, 80, 17);
+        lblQuery.setBounds(17, 87, 80, 17);
         content.add(lblQuery);
 
         results = new JTextArea();
@@ -68,9 +82,11 @@ public class GUI {
         results.setLineWrap(true);
         results.setWrapStyleWord(true);
         JScrollPane scroll = new JScrollPane(results);
-        scroll.setBounds(17, 200, 653, 330);
+        scroll.setBounds(17, 250, 653, 290);
         content.add(scroll);
 
+
+        // documents browse
         JButton Browse = new JButton("...");
         Browse.addActionListener(new ActionListener() {
             @Override
@@ -93,11 +109,9 @@ public class GUI {
                         directory.setBackground(Color.RED);
                     }
                 }
-                else {
-//			      System.out.println("No Selection ");
-                  }
             }
         });
+
         Browse.setBounds(636, 33, 32, 30);
         content.add(Browse);
 
@@ -109,15 +123,15 @@ public class GUI {
                     Path path = Paths.get(directory.getText());
                     if (Files.exists(path)) {
 			File file = new File(directory.getText());
-                        if(file.list().length>0){//fix this!!!!!!!!!!!!!!!!!!!!!!!
-                        directory.setBackground(Color.GREEN);
-                        if(query.getText().length()>=1){
-                            query.setBackground(Color.GREEN);
-                            String[] queryTerms = query.getText().split(" ");
-                            String filePath = directory.getText();
-                            // call the main function
-                            Main.querySystem(queryTerms, filePath);                                   
-                        }
+                        if(file.list().length>0) {//fix this!!!!!!!!!!!!!!!!!!!!!!!
+                            directory.setBackground(Color.GREEN);
+                            if(query.getText().length()>=1) {
+                                query.setBackground(Color.GREEN);
+                                String[] queryTerms = query.getText().split(" ");
+                                String filePath = directory.getText();
+                                // call the main function
+                                Main.querySystem(queryTerms, filePath);                                   
+                            }
                         else{
                             query.setBackground(Color.RED);
                         }
@@ -134,14 +148,8 @@ public class GUI {
         });
         searchBtn.setIcon(new ImageIcon("images\\search-button-green-icon.png"));
         searchBtn.setFont(new Font("Consolas", Font.PLAIN, 11));
-        searchBtn.setBounds(636, 90, 32, 30);
+        searchBtn.setBounds(636, 80, 32, 30);
         content.add(searchBtn);
-
-
-        final Canvas canvas = new Canvas();
-        canvas.setBackground(Color.WHITE);
-        canvas.setBounds(17, 160, 651, 391);
-        content.add(canvas);
 
         query = new JTextField();
         query.addKeyListener(new KeyAdapter() {
@@ -198,12 +206,80 @@ public class GUI {
         query.setFont(new Font("Consolas", Font.PLAIN, 14));
         query.setText("the crystalline lens in vertebrates including humans");
         query.setColumns(10);
-        query.setBounds(96, 90, 530, 30);
+        query.setBounds(100, 80, 524, 30);
         content.add(query);
+
+
+        // query browse
+        JButton queryBrowse = new JButton("...");
+        queryBrowse.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {                
+                String choosertitle = "Queries Directory";
+
+                chooser = new JFileChooser(); 
+                chooser.setCurrentDirectory(new java.io.File("."));
+                chooser.setDialogTitle(choosertitle);
+                chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                // disable the "All files" option.
+                chooser.setAcceptAllFileFilterUsed(false);
+
+                if (chooser.showOpenDialog(frmInformationRetrievalSystem) == JFileChooser.APPROVE_OPTION) {
+                    queryDirectory.setText(""+chooser.getSelectedFile());
+
+                    if (Files.exists(chooser.getSelectedFile().toPath())) {
+                        queryDirectory.setBackground(Color.GREEN);
+                    }
+                    else{
+                        queryDirectory.setBackground(Color.RED);
+                    }
+                }
+            }
+        });
+
+        queryBrowse.setBounds(636, 163, 32, 30);
+        content.add(queryBrowse);
+
+         // test system
+        JButton testSystem = new JButton("Test System");
+
+        testSystem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {                
+                try{
+                    Path path = Paths.get(queryDirectory.getText());
+                    if (Files.exists(path)) {
+                        File file = new File(queryDirectory.getText());
+
+                        if(file.list().length > 0) {
+                            directory.setBackground(Color.GREEN);
+                            queryDirectory.setBackground(Color.GREEN);
+
+                            String documentsPath = directory.getText();
+                            String queryPath = queryDirectory.getText();
+
+                            Main.testSystem(queryPath, documentsPath);
+                        }
+                        else {
+                            directory.setBackground(Color.RED);
+                            queryDirectory.setBackground(Color.RED);
+                        }
+                    }
+                }
+                catch(Exception ex){
+                    directory.setBackground(Color.RED);
+                    queryDirectory.setBackground(Color.RED);
+                }
+            }
+        });
+
+        testSystem.setBounds(290, 203, 120, 30);
+        content.add(testSystem);
+
     }
 
     // prints input to window
     public <I>void print(I input) {
-        results.append(input.toString() +"\n\n");
+        results.append(input.toString() +"\n");
     }
 }

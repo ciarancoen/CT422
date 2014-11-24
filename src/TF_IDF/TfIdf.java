@@ -78,7 +78,6 @@ public class TfIdf {
         if(termIndex.containsKey(term)){
 //            for(int i=0;i<query.size();i++){
                 double tf = Collections.frequency(query, term);
-                System.out.println(tf+" occurrences of "+ term);
                 tf = tf/query.size();
                 
 //            }

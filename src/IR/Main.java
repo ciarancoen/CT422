@@ -14,7 +14,10 @@ import java.awt.EventQueue;
 
 public class Main {
     private static DocumentSet docSet;
-    private static String path = "";
+    private static Map<String, String> querySet;
+
+    private static String documentsPath = "";
+    private static String queriesPath = "";
     private static GUI window;
 
 	public static void main(String[] args) {
@@ -30,11 +33,11 @@ public class Main {
     }
         
     // query the system with a user query
-    public static void querySystem(String[] queryArray, String documentsPath) {
+    public static void querySystem(String query, String docsPath) {
         // only create docSet once
-        if ( docSet == null || !(documentsPath.equals(path)) ) {
+        if ( docSet == null || !(docsPath.equals(documentsPath)) ) {
             long docStart = System.currentTimeMillis();
-            path = documentsPath;
+            documentsPath = docsPath;
             docSet = new DocumentSet(documentsPath);
             long docEnd = System.currentTimeMillis() - docStart;
             window.print("Document set created in " +docEnd +"ms.");
@@ -42,7 +45,57 @@ public class Main {
 
         long start = System.currentTimeMillis();
 
-        List<String> query = Queries.processQuery(queryArray);
+        Map<String, Double> similarities = performQuery(query);
+
+        // print results
+        List<String> results = Maps.sortMapByKey(similarities);
+
+        for (String s : results)
+            window.print( s );
+
+        long end = System.currentTimeMillis() - start;
+        window.print("Results returned in " +end +"ms.\n");
+    }
+
+
+    // test the system using the query documents
+    public static void testSystem(String qPath, String docsPath) {
+        // only create docSet once
+        if ( docSet == null || !(docsPath.equals(documentsPath)) ) {
+            long docStart = System.currentTimeMillis();
+            documentsPath = docsPath;
+            docSet = new DocumentSet(documentsPath);
+            long docEnd = System.currentTimeMillis() - docStart;
+            window.print("Document set created in " +docEnd +"ms.");
+        }
+
+        // only create querySet once
+        if ( querySet == null || !(qPath.equals(queriesPath)) ) {
+            long qStart = System.currentTimeMillis();
+            queriesPath = qPath;
+            querySet = Queries.parseQueries(queriesPath);
+            long qEnd = System.currentTimeMillis() - qStart;
+            window.print("Query set created in " +qEnd +"ms.");
+        }
+
+        
+        Iterator it = querySet.entrySet().iterator();
+
+        while (it.hasNext()) {
+            Map.Entry entry = (Map.Entry) it.next();
+            String fileName = (String) entry.getKey();
+            String query = (String) entry.getValue();
+
+            // TODO: print results etc.
+            performQuery(query);
+
+        }   // end loop though queries
+    }
+
+
+    // query the documentSet
+    private static Map<String, Double> performQuery(String queryInput) {
+        List<String> query = Queries.processQuery(queryInput);
 
         TfIdf tfidf = new TfIdf(docSet.termIndex(), docSet.fileLengths(), docSet.fileCount(), query);
         Map<String, Map<String, Double>> weights = new HashMap<String, Map<String, Double>>();
@@ -62,26 +115,16 @@ public class Main {
             Map.Entry entry = (Map.Entry) it.next();
             Map weight = (HashMap) entry.getValue();
 
-            // filename & similarity with query
-            similarities.put( (String)entry.getKey(), Similarity.similarity(queryWeights, weight) );
+            double sim = Similarity.similarity(queryWeights, weight);
+            double threshold = 0.0008;
+
+            // only consider documents with a similarity abouve the threshold
+            if (sim > threshold) {
+                similarities.put( (String)entry.getKey(), sim );
+            }
         }
 
-        // print results
-        List<Map.Entry> results = Maps.sortMap(similarities);
-
-        for ( int i=0; i<10; i++ ) {
-            window.print( results.get(i).getKey() );
-        }
-
-        long end = System.currentTimeMillis() - start;
-        window.print("Results returned in " +end +"ms.\n");
-    }
-
-
-    // test the system using the query documents
-    public static void testSystem(String querysPath, String documentsPath) {
-        System.out.println(querysPath +" : " +documentsPath);
-
+        return similarities;
     }
 
 }

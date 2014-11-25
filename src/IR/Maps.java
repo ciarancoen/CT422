@@ -19,7 +19,7 @@ public class Maps {
 	}
 
     // returns the map entries in sorted order
-	public static List<Map.Entry> sortMap(Map map) {
+	public static List<Map.Entry> sortMapByValue(Map map) {
 		List<Map.Entry> sorted = new ArrayList<Map.Entry>(map.entrySet());
 
 		Collections.sort(sorted, new Comparator() {
@@ -28,6 +28,26 @@ public class Maps {
 				double d2 = (double) ((Map.Entry) entry2).getValue();
 
 				return Double.compare(d2, d1);
+			}
+		});
+
+		return sorted;
+	}
+
+	// returns the map entries in sorted order
+	public static List<String> sortMapByKey(Map map) {
+		List<String> sorted = new ArrayList<String>(map.keySet());
+
+		// sort filenames by numeric value
+		Collections.sort(sorted, new Comparator() {
+			public int compare(Object str1, Object str2) {
+				String s1 = (String) str1;
+				String s2 = (String) str2;
+
+				int file1 = Integer.parseInt( s1.split("\\.")[0] );
+				int file2 = Integer.parseInt( s2.split("\\.")[0] );
+
+				return file1 - file2;
 			}
 		});
 

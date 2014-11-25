@@ -127,10 +127,10 @@ public class GUI {
                             directory.setBackground(Color.GREEN);
                             if(query.getText().length()>=1) {
                                 query.setBackground(Color.GREEN);
-                                String[] queryTerms = query.getText().split(" ");
+                                String queryString = query.getText();
                                 String filePath = directory.getText();
                                 // call the main function
-                                Main.querySystem(queryTerms, filePath);                                   
+                                Main.querySystem(queryString, filePath);                                   
                             }
                         else{
                             query.setBackground(Color.RED);
@@ -162,11 +162,11 @@ public class GUI {
                                 directory.setBackground(Color.GREEN);
                                 if(query.getText().length()>=1){
                                     query.setBackground(Color.GREEN);
-                                    String[] queryTerms = query.getText().split(" ");
+                                    String queryString = query.getText();
                                     String filePath = directory.getText();
 									try{
 
-										Main.querySystem(queryTerms, filePath);
+										Main.querySystem(queryString, filePath);
 									}
                                     catch(Exception ex){}
                                 }

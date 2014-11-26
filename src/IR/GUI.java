@@ -282,4 +282,9 @@ public class GUI {
     public <I>void print(I input) {
         results.append(input.toString() +"\n");
     }
+
+
+    public void clearWindow() {
+        results.setText("");
+    }
 }

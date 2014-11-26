@@ -9,6 +9,10 @@ import java.util.Map;
 import java.util.Iterator;
 import java.awt.EventQueue;
 
+import java.io.File;
+import java.io.PrintWriter;
+
+
 // NOTE: to use the snowball stemmer, include the stemmer.jar in classpath
 // when compiling and running
 
@@ -34,6 +38,8 @@ public class Main {
         
     // query the system with a user query
     public static void querySystem(String query, String docsPath) {
+        window.clearWindow();
+
         // only create docSet once
         if ( docSet == null || !(docsPath.equals(documentsPath)) ) {
             long docStart = System.currentTimeMillis();
@@ -60,6 +66,8 @@ public class Main {
 
     // test the system using the query documents
     public static void testSystem(String qPath, String docsPath) {
+        window.clearWindow();
+        
         // only create docSet once
         if ( docSet == null || !(docsPath.equals(documentsPath)) ) {
             long docStart = System.currentTimeMillis();
@@ -78,18 +86,47 @@ public class Main {
             window.print("Query set created in " +qEnd +"ms.");
         }
 
-        
+        long start = System.currentTimeMillis();
+
         Iterator it = querySet.entrySet().iterator();
+        PrintWriter out = null;
+        File outFile = new File("results/results.txt");
+        outFile.getParentFile().mkdirs();
 
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
-            String fileName = (String) entry.getKey();
-            String query = (String) entry.getValue();
+        try {
+            out = new PrintWriter(outFile);
 
-            // TODO: print results etc.
-            performQuery(query);
+            while (it.hasNext()) {
+                Map.Entry entry = (Map.Entry) it.next();
+                String fileName = ((String) entry.getKey()).split("\\.")[0];  // remove .txt
+                String query = (String) entry.getValue();
 
-        }   // end loop though queries
+                // TODO: print results etc.
+                Map<String, Double> similarities = performQuery(query);
+
+                // print results
+                List<String> results = Maps.sortMapByKey(similarities);
+
+                for (String s : results) {
+                    String f = s.split("\\.")[0];
+
+                    window.print( fileName +" " +f );
+                    // print results in a similar manner to MED.REL
+                    out.println( fileName +" 0 " +f +" 1" );
+                }
+                    
+
+            }   // end loop though queries
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        out.close();
+
+        long end = System.currentTimeMillis() - start;
+        window.print("Test completed in " +end +"ms.\n");
+        window.print("Results output to results.txt");
+
     }
 
 

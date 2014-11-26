@@ -4,7 +4,9 @@ import IR.Preprocessor;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Map;
 
 import java.io.*;
@@ -34,12 +36,24 @@ public class Queries {
 	}
 
 	public static Map<String, String> parseQueries(String folderPath) {
-        File[] files;
         // get a list of all the docs
-        files = new File(folderPath).listFiles();
+        File[] files = new File(folderPath).listFiles();
 
         Preprocessor preprocessor = new Preprocessor();
-        Map<String, String> map = new HashMap<String, String>();        
+        Map<String, String> map = new LinkedHashMap<String, String>();
+
+        // sort queries by their filename
+        Arrays.sort(files, new Comparator() {
+            public int compare(Object str1, Object str2) {
+                String s1 = ((File)str1).getName();
+                String s2 = ((File)str2).getName();
+
+                int file1 = Integer.parseInt( s1.split("\\.")[0] );
+                int file2 = Integer.parseInt( s2.split("\\.")[0] );
+
+                return file1 - file2;
+            }
+        });
         
         // process the files
         for (File f : files) {

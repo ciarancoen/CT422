@@ -4,7 +4,11 @@ import TF_IDF.TfIdf;
 import MapReduce.*;
 import IR.Preprocessor;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.IOException;
+
 import java.lang.StringBuilder;
 
 import java.util.List;

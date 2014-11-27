@@ -67,21 +67,12 @@ public class TfIdf {
         return 0;
     }
     
-//    public Map<String, Double> get_query_TFIDF_Map(String term, List<String> query) {
-//        //get tf for all query terms, multiply by IDF
-//        return queryTFIDF;
-//    }
-    
     public Map<String, Double> get_query_TFIDF_Map(String term) {       
-//        Set<Map.Entry<String, Integer>> entries;
 
-        if(termIndex.containsKey(term)){
-//            for(int i=0;i<query.size();i++){
-                double tf = Collections.frequency(query, term);
-                tf = tf/query.size();
-                
-//            }
-//            entries = termIndex.get(term).entrySet();//returns only the term set
+        if(termIndex.containsKey(term)) {
+            double tf = Collections.frequency(query, term);
+            tf = tf/query.size();
+
             queryTFIDF.put(term, tf * idf(term));
         }
         return queryTFIDF;

@@ -18,7 +18,9 @@ public class GUI {
     private JTextField query;
     private JLabel lblQuery;
     private JTextArea results;
-    JFileChooser chooser;
+    private JCheckBox sortBox;
+    private JFileChooser chooser;
+    private boolean sortBySimilarity;   
 
     /**
      * Create the application.
@@ -32,6 +34,8 @@ public class GUI {
      * Initialize the contents of the frame.
      */
     private void initialize() throws FileNotFoundException {
+        sortBySimilarity = false;
+
         frmInformationRetrievalSystem = new JFrame();
         Container content = frmInformationRetrievalSystem.getContentPane();
 
@@ -65,11 +69,7 @@ public class GUI {
         queryDirectory.setBounds(100, 163, 524, 30);
         queryDirectory.setText("queries");
         content.add(queryDirectory);
-        queryDirectory.setColumns(10);   		
-
-        // final JProgressBar progressBar = new JProgressBar();
-        // progressBar.setBounds(100, 131, 530, 23);
-        // content.add(progressBar);          
+        queryDirectory.setColumns(10);   		     
 
         lblQuery = new JLabel("Query:");
         lblQuery.setFont(new Font("Consolas", Font.PLAIN, 14));
@@ -84,6 +84,16 @@ public class GUI {
         JScrollPane scroll = new JScrollPane(results);
         scroll.setBounds(17, 250, 653, 290);
         content.add(scroll);
+
+        sortBox = new JCheckBox("Sort Results by Similarities");
+        sortBox.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {         
+                sortBySimilarity = ( e.getStateChange() == 1 ? true : false );
+            } 
+        });
+
+        sortBox.setBounds(500, 120, 200, 30);
+        content.add(sortBox);
 
 
         // documents browse
@@ -286,5 +296,9 @@ public class GUI {
 
     public void clearWindow() {
         results.setText("");
+    }
+
+    public boolean sortBySimilarity() {
+        return sortBySimilarity;
     }
 }

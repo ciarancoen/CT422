@@ -53,11 +53,20 @@ public class Main {
 
         Map<String, Double> similarities = performQuery(query);
 
-        // print results
+        if ( window.sortBySimilarity() ) {
+            List<Map.Entry> results = Maps.sortMapByValue(similarities);
+
+            for (Map.Entry s : results) {
+                String f = ((String)s.getKey()).split("\\.")[0];
+                window.print( f );
+            }
+        }
+        else {
         List<String> results = Maps.sortMapByKey(similarities);
 
-        for (String s : results)
-            window.print( s );
+            for (String s : results)
+                window.print( s.split("\\.")[0] );
+        }   
 
         long end = System.currentTimeMillis() - start;
         window.print("Results returned in " +end +"ms.\n");
@@ -98,23 +107,36 @@ public class Main {
 
             while (it.hasNext()) {
                 Map.Entry entry = (Map.Entry) it.next();
-                String fileName = ((String) entry.getKey()).split("\\.")[0];  // remove .txt
+                String qFileName = ((String) entry.getKey()).split("\\.")[0];  // remove .txt
                 String query = (String) entry.getValue();
 
                 // TODO: print results etc.
                 Map<String, Double> similarities = performQuery(query);
 
                 // print results
-                List<String> results = Maps.sortMapByKey(similarities);
+                // sort by similarity or by filename
+                if ( window.sortBySimilarity() ) {
+                    List<Map.Entry> results = Maps.sortMapByValue(similarities);
 
-                for (String s : results) {
-                    String f = s.split("\\.")[0];
+                    for (Map.Entry e : results) {
+                        String f = ((String) e.getKey()).split("\\.")[0];
 
-                    window.print( fileName +" " +f );
-                    // print results in a similar manner to MED.REL
-                    out.println( fileName +" 0 " +f +" 1" );
+                        window.print( qFileName +" " +f );
+                        // print results in a similar manner to MED.REL
+                        out.println( qFileName +" 0 " +f +" 1" );
+                    }
                 }
-                    
+                else {
+                    List<String> results = Maps.sortMapByKey(similarities);
+
+                    for (String s : results) {
+                        String f = s.split("\\.")[0];
+
+                        window.print( qFileName +" " +f );
+                        // print results in a similar manner to MED.REL
+                        out.println( qFileName +" 0 " +f +" 1" );
+                    }
+                }   
 
             }   // end loop though queries
         } catch (Exception e) {
